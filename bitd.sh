@@ -68,7 +68,7 @@ tar -zxvf webpackage_preBuild.tgz
 FORM="DeploymentWebApp/www/form.html"
 if [ -e "$FORM" ]
 then
-	echo "form.html exists!" >> ~/WebApp/log.txt
+	echo "form.html exists!" >> ~/DeploymentScripts/log.txt
 else
 	echo "form.html is not present!" >> ~/DeploymentScripts/log.txt
 	ERRORCHECK=$((ERRORCHECK+1))
