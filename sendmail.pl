@@ -2,7 +2,7 @@
 use Net::SMTP;
 
 my $subj="Mailer message - ".convdatetimenow();
-my $mailserver='mail1.eircom.net';
+my $mailserver='smtp.gmail.com';
 my $to=shift @ARGV;
 my $from=$to;
 my $m=shift @ARGV;
