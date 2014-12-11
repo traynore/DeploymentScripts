@@ -2,7 +2,7 @@
 
 # set ADMIN and MAILSERVER vars for mail script
 ADMINISTRATOR=emmett.traynor@gmail.com
-MAILSERVER=pop.gmail.com
+MAILSERVER=smtp.gmail.com
 
 timestamp() {
 	date +"%T"
