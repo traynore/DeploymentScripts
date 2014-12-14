@@ -2,7 +2,7 @@
   my $mail = new Mail::SendEasy(
   smtp => 'smtp.gmail.com' ,
   user => 'emmett.traynor@gmail.com' ,
-  pass => neowelt2007 ,
+  pass =>  ,
   port => 2525 ,
   ) ;
   
