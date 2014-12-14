@@ -18,7 +18,7 @@ cd $SANDBOX
 # free, vmstat, top
 
 # check disk
-# df -h
+df -h
 
 # check network
 # iostat, iotop, netstat
@@ -84,4 +84,5 @@ echo "Setting up monitoring Cron job" >> ~/MyLogs/deploy_log.txt
 # run monitoring script because Cron is being annoying and not working
 bash ~/logmon.sh
 
-echo "DONE" >> ~/MyLogs/deploy_log.txt
+echo "A new version of your Web Application has been successfully deployed LIVE" >> ~/MyLogs/deploy_log.txt | perl ~/sendmail.pl $ADMINISTRATOR $MAILSERVER
+exit
