@@ -223,7 +223,7 @@ then
 	scp -i ~/keypair1.pem webpackage_preDeploy.tgz igayvhmsqinrwe@ec2-54-221-249-3.compute-1.amazonaws.com:~
 	scp -i ~/keypair1.pem ~/DeploymentScripts/logmon.sh igayvhmsqinrwe@ec2-54-221-249-3.compute-1.amazonaws.com:~
 	scp -i ~/keypair1.pem ~/DeploymentScripts/deploy.sh igayvhmsqinrwe@ec2-54-221-249-3.compute-1.amazonaws.com:~
-	scp -i ~/keypair1.pem ~/DeploymentScripts/sendmail.pl igayvhmsqinrwe@ec2-54-221-249-3.compute-1.amazonaws.com:~
+	# scp -i ~/keypair1.pem ~/DeploymentScripts/sendmail.pl igayvhmsqinrwe@ec2-54-221-249-3.compute-1.amazonaws.com:~
 
 	# ssh into AWS instance
 	ssh -i ~/keypair1.pem igayvhmsqinrwe@ec2-54-221-249-3.compute-1.amazonaws.com 'sudo bash deploy.sh'
