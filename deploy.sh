@@ -15,13 +15,13 @@ cd $SANDBOX
 
 # test resources
 # check memory
-# free, vmstat, top
+top
 
 # check disk
 df -h
 
 # check network
-# iostat, iotop, netstat
+netstat
 
 # clean environment ie un- and re-install apache and mysql
 # stop services
@@ -76,8 +76,8 @@ else
 fi
 
 # configure crontab to run monitoring script
-# modified from http://stackoverflow.com/questions/610839/how-can-i-programatically-create-a-new-cron-job
 # configure crontab, make sure new cron job is unique
+
 echo "Setting up monitoring Cron job" >> ~/MyLogs/deploy_log.txt
 (crontab -l ; echo "40 15 * * * bash ~/logmon.sh") | uniq - | crontab -
 
