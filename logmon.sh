@@ -200,10 +200,10 @@ else
 	ERRORCOUNT=$((ERRORCOUNT+1))
 fi
 
-# checking if errors exist, logging messages, sending mail if necessary
+# checking if errors exist, logging messages, send mail if necessary
 if [ $ERRORCOUNT -gt 0 ]
 then
-	echo "ERROR! ERROR! There is a problem with SOMETHING!" | perl ~/sendmail.pl $ADMINISTRATOR $MAILSERVER
-	echo "Something is wrong with the production environment." >> ~/MyLogs/monitor_log.txt
+	echo "ERROR! The process encountered an issue!" | perl ~/sendmail.pl $ADMINISTRATOR $MAILSERVER
+	echo "An error occurred during deployment." >> ~/MyLogs/monitor_log.txt
 else
-	echo "Everything is fine" >> ~/MyLogs/monitor_log.txt
+	echo "Everything looks good" >> ~/MyLogs/monitor_log.txt
