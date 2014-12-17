@@ -76,12 +76,12 @@ else
 fi
 
 # configure crontab to run monitoring script
-# configure crontab, make sure new cron job is unique
+
 
 echo "Setting up monitoring Cron job" >> ~/MyLogs/deploy_log.txt
 (crontab -l ; echo "40 15 * * * bash ~/logmon.sh") | uniq - | crontab -
 
-# run monitoring script because Cron is being annoying and not working
+# run monitoring script
 bash ~/logmon.sh
 
 echo "A new version of your Web Application has been successfully deployed LIVE" >> ~/MyLogs/deploy_log.txt | perl ~/sendmail.pl $ADMINISTRATOR $MAILSERVER
