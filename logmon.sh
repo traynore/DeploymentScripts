@@ -8,10 +8,9 @@ timestamp() {
 	date +"%T"
 }
 
-# append timestamp to log file so each set of log messages is identifiable
+# add timestamp to log file
 echo $(timestamp) >> ~/MyLogs/monitor_log.txt
 
-# Level 1 Functions
 
 # check if apache is running
 function isApacheRunning {
@@ -61,10 +60,9 @@ function checkCPU {
 	return $?
 }
 
-# Level 0 Functions
 
 # function to check if service is running
-# pass in apache, mysql etc
+
 function isRunning {
 	PROCESS_NUM=$(ps -ef | grep "$1" | grep -v "grep" | wc -l)
 	if [ $PROCESS_NUM -gt 0 ]; then
@@ -76,7 +74,7 @@ function isRunning {
 }
 
 # function to check is service is listening on TCP
-# pass in mysql, apache2 etc
+
 function isTCPlisten {
 	TCPCOUNT=$(netstat -tupln | grep tcp | grep "$1" | wc -l)
 	if [ $TCPCOUNT -gt 0 ]; then
@@ -124,11 +122,11 @@ function getCPU {
 	fi
 }
 
-# Functional Body of Script
+# Set error count to zero
 
 ERRORCOUNT=0
 
-# checking if Apache is running, logging output, increasing ERRORCOUNT if necessary
+# checking if Apache is running, logging output, increasing ERRORCOUNT if required
 isApacheRunning
 if [ "$?" -eq 1 ]; then
 	echo Apache Process is Running >> ~/MyLogs/monitor_log.txt
@@ -137,7 +135,7 @@ else
 	ERRORCOUNT=$((ERRORCOUNT+1))
 fi
 
-# checking if Apache is listening, logging output, increasing ERRORCOUNT if necessary
+# checking if Apache is listening, logging output, increasing ERRORCOUNT if required
 isApacheListening
 if [ "$?" -eq 1 ]; then
 	echo Apache is Listening >> ~/MyLogs/monitor_log.txt
@@ -146,7 +144,7 @@ else
 	ERRORCOUNT=$((ERRORCOUNT+1))
 fi
 
-# checking if Apache remote is up, logging output, increasing ERRORCOUNT if necessary
+# checking if Apache remote is up, logging output, increasing ERRORCOUNT if required
 isApacheRemoteUp
 if [ "$?" -eq 1 ]; then
 	echo Remote Apache TCP port is UP >> ~/MyLogs/monitor_log.txt
@@ -155,7 +153,7 @@ else
 	ERRORCOUNT=$((ERRORCOUNT+1))
 fi
 
-# checking if mySQL is running, logging output, increasing ERRORCOUNT if necessary
+# checking if mySQL is running, logging output, increasing ERRORCOUNT if required
 isMysqlRunning
 if [ "$?" -eq 1 ]; then
 	echo mySQL process is Running >> ~/MyLogs/monitor_log.txt
@@ -164,7 +162,7 @@ else
 	ERRORCOUNT=$((ERRORCOUNT+1))
 fi
 
-# checking if mySQL is listening, logging output, increasing ERRORCOUNT if necessary
+# checking if mySQL is listening, logging output, increasing ERRORCOUNT if required
 isMysqlListening
 if [ "$?" -eq 1 ]; then
 	echo mySQL is listening >> ~/MyLogs/monitor_log.txt
@@ -173,7 +171,7 @@ else
 	ERRORCOUNT=$((ERRORCOUNT+1))
 fi
 
-# checking if mySQL remote is up, logging output, increasing ERRORCOUNT if necessary
+# checking if mySQL remote is up, logging output, increasing ERRORCOUNT if required
 isMysqlRemoteUp
 if [ "$?" -eq 1 ]; then
 	echo Remote mySQL TCP port is UP >> ~/MyLogs/monitor_log.txt
@@ -182,7 +180,7 @@ else
 	ERRORCOUNT=$((ERRORCOUNT+1))
 fi
 
-# checking if network is pingable, logging output, increasing ERRORCOUNT if necessary
+# checking if network is pingable, logging output, increasing ERRORCOUNT if required
 isSomethingPingable
 if [ "$?" -eq 1 ]; then
 	echo Network is alive >> ~/MyLogs/monitor_log.txt
@@ -191,7 +189,7 @@ else
 	ERRORCOUNT=$((ERRORCOUNT+1))
 fi
 
-# checking if CPU usage is ok, logging output, increasing ERRORCOUNT if necessary
+# checking if CPU usage is ok, logging output, increasing ERRORCOUNT if required
 checkCPU
 if [ "$?" -eq 1 ]; then
 	echo CPU usage is ok >> ~/MyLogs/monitor_log.txt
@@ -200,7 +198,7 @@ else
 	ERRORCOUNT=$((ERRORCOUNT+1))
 fi
 
-# checking if errors exist, logging messages, send mail if necessary
+# checking if errors exist, logging messages, send mail if required
 if [ $ERRORCOUNT -gt 0 ]
 then
 	echo "ERROR! The process encountered an issue!" | perl ~/sendmail.pl $ADMINISTRATOR $MAILSERVER
