@@ -1,17 +1,17 @@
 #!/bin/bash
 
-# create timestamp
+# output timestamp for logs
 timestamp() {
 	date +"%T"
 }
 
-# append timestamp to log file so each set of log messages is identifiable
+# add timestamp to log file for identification purposes
 echo $(timestamp) >> ~/DeploymentScripts/log.txt
 
 # change into tmp directory
 cd /tmp
 
-# create sandbox
+# create sandbox directory
 SANDBOX=sandbox_$RANDOM
 mkdir $SANDBOX
 echo Using sandbox $SANDBOX
@@ -20,15 +20,15 @@ cd $SANDBOX
 # set errorcheck variable to 0
 ERRORCHECK=0
 
-# create process folders
+# make folders
 mkdir build
 mkdir integrate
 mkdir test
 
-# get webpackage for testing
+# get website files for testing
 git clone https://github.com/traynore/WebApp.git
 
-# tar up webpackage
+# tar up package
 tar -zcvf webpackage_preBuild.tgz WebApp
 
 # check if MD5sum has changed
@@ -44,27 +44,27 @@ else
 	echo $MD5SUM equal to $PREVMD5SUM
 fi
 
-# store MD5sum out in file
+# store MD5sum in file
 echo $MD5SUM > /tmp/md5sum
 
-# exit cleanly if MD5sum hasn't changed, otherwise proceed
+# if MD5sum hasn't changed exit, otherwise continue
 if [ $FILECHANGE -eq 0 ]
 then
-	echo no change in files, doing nothing and exiting >> ~/DeploymentScripts/log.txt
+	echo no change in files, so exiting >> ~/DeploymentScripts/log.txt
 	exit
 fi
 
-# move webpackage to build dir
+# move web files to build dir
 echo "Moving to build phase" >> ~/DeploymentScripts/log.txt
 mv webpackage_preBuild.tgz build
 rm -rf WebApp
 
-# untar file
+# untar web package
 cd build
 tar -zxvf webpackage_preBuild.tgz
 
-# perform build/manipulation functions
-# test form.html, accept_form.pl, hello_world.pl, testdb.pl exist
+
+# test to see if expectant files exist
 FORM="DeploymentWebApp/www/form.html"
 if [ -e "$FORM" ]
 then
@@ -98,34 +98,34 @@ else
 	ERRORCHECK=$((ERRORCHECK+1))
 fi
 
-# integrate static html content from 2 or more files into 1
+# merge static html content from 2 or more files into 1
 cat DeploymentWebApp/www/content.html WebApp/www/image.html > WebApp/www/index.html
 INDEX="DeploymentWebApp/www/index.html"
 if [ -e "$INDEX" ]
 then
-	echo "index.html created successfully" >> ~/DeploymentScripts/log.txt
+	echo "index.html was created successfully" >> ~/DeploymentScripts/log.txt
 else
-	echo "index.html not created successfully" >> ~/DeploymentScripts/log.txt
+	echo "index.html was not created successfully" >> ~/DeploymentScripts/log.txt
 	ERRORCHECK=$((ERRORCHECK+1))
 fi
 
-# clean environment (uninstall + reinstall apache + mysql)
-# stop services
+
+# stopping services
 echo "Stopping services" >> ~/DeploymentScripts/log.txt
 service apache2 stop
 service mysql stop
 
-# uninstall
+# cleaning environment (uninstall + reinstall apache + mysql)
 echo "Uninstalling Apache and mySQL" >> ~/DeploymentScripts/log.txt
 apt-get -q -y remove apache2
 apt-get -q -y remove mysql-client mysql-server
 echo mysql-server mysql-server/root_password password password | debconf-set-selections
 echo mysql-server mysql-server/root_password_again password password | debconf-set-selections
 
-# refresh apt package repo
+# update
 apt-get update
 
-# reinstall
+# reinstall apache + mysql
 echo "Reinstalling Apache and mySQL" >> ~/DeploymentScripts/log.txt
 apt-get install apache2
 apt-get install mysql-client mysql-server
@@ -135,10 +135,10 @@ echo "Starting services" >> ~/DeploymentScripts/log.txt
 service apache2 start
 service mysql start
 
-# tar package back up
+# tar web files back up
 tar -zcvf webpackage_preIntegrate.tgz WebApp
 
-# # move webpackage to Integrate dir and clean up
+# move web files to Integrate dir and clean build directory
 echo "Moving to Integration phase" >> ~/DeploymentScripts/log.txt
 mv webpackage_preIntegrate.tgz ../integrate
 rm -rf WebApp
@@ -147,7 +147,7 @@ rm -rf WebApp
 cd ../integrate
 tar -zxvf webpackage_preIntegrate.tgz
 
-# move html files to apache /www
+# move html files to apache /www directory
 cd WebApp
 cp www/* /var/www
 
@@ -178,8 +178,8 @@ fi
 # tar it back up
 tar -zcvf webpackage_preTest.tgz DeploymentWebApp
 
-# # move to test dir and clean up
-echo "Moving to Test phase" >> ~/DeploymentScripts/log.txt
+# move to test dir and clean up
+echo "Moving to Test directory" >> ~/DeploymentScripts/log.txt
 mv webpackage_preTest.tgz ../test
 rm -rf WebApp
 
@@ -187,14 +187,13 @@ rm -rf WebApp
 cd ../test
 tar -zxvf webpackage_preTest.tgz
 
-# perform test/manipulation
-# check static content is properly constructed
+
+# check static content is properly coded
 tidy /var/www/*
 
-# test dynamic content functions as required
-# ie perl script enters data into database
-# configure mysql
-echo "Testing if data added to mysql" >> ~/DeploymentScripts/log.txt
+# test dynamic content
+
+echo "Test to see if data added to mysql successfully" >> ~/DeploymentScripts/log.txt
 cat <<FINISH | mysql -uroot -ppassword
 drop database if exists dbtest;
 CREATE DATABASE dbtest;
@@ -206,19 +205,15 @@ insert into custdetails (name,address) values ('Emmett Traynor', 'Cavan');
 select * from custdetails;
 FINISH
 
-# add more tests here
 
-# tar package back up
+# tar web files back up
 tar -zcvf webpackage_preDeploy.tgz WebApp
 
-# check that ERRORCHECK is not 0
+# check that ERRORCHECK is not equal to zero
 if [ $ERRORCHECK -eq 0 ]
 then
-	# backup content
-	# mysqldump > db_backup
-	# scp -i keypair1.pem db_backup testuser@whatever_backup_server_ip_is
 
-	# move webpackage + scripts to deployment server
+	# move web files and deployment scripts to AWS LIVE server
 	echo "Moving to Production server" >> ~/DeploymentScripts/log.txt
 	scp -i ~/keypair1.pem webpackage_preDeploy.tgz igayvhmsqinrwe@ec2-54-221-249-3.compute-1.amazonaws.com:~
 	scp -i ~/keypair1.pem ~/DeploymentScripts/logmon.sh igayvhmsqinrwe@ec2-54-221-249-3.compute-1.amazonaws.com:~
@@ -230,6 +225,6 @@ then
 
 	echo "Deployment completed successfully." >> ~/DeploymentScripts/log.txt
 else
-	echo "Errors in Build, Integration or Test Phase... exiting..." >> ~/DeploymentScripts/log.txt
+	echo "Errors in Test Phase" >> ~/DeploymentScripts/log.txt
 	exit
 fi
